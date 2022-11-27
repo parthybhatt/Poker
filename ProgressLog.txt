@@ -1,0 +1,18 @@
+Just for fun. To learn poker and practice programming.
+
+Parts of code:
+1. MainCode: This would be the table game.
+    It would decide how many players(bots) will play the game.
+    It would hold the spots on the table to place the cards.
+    It would call the dealer for the next cards
+    It would pass the cards to display module to create pretty show.
+    Table would also handle the pot and assign the chips to all the bots.
+2. Bot:
+    Each bot will only be able to view their own cards on the table and the flops/turn/river.
+    Each bots will calculate their chances of winning and decide what to do.
+    Everybot will have a confidence level that would change in every round and will make the bets accordingly.
+3. Dealer:
+    Shuffle the cards and manage the deck.
+4. Display:
+    Prettify the output.
+    The details of the display will change depending on whether the viewer is a player too.
