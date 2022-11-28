@@ -55,26 +55,32 @@ void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 	{
 		if(buffer->allowOverflow == true)
 		{
-			//
+			AddElementAtIndex(buffer, element, &buffer->writerIdx);
 		}
 	}
-
-    if(buffer->writerIdx != buffer->readerIdx)
-    {
-    	bufferLoc += (buffer->writerIdx * buffer->elementSize);
-    	memcpy(bufferLoc, element, buffer->elementSize);
-    	buffer->writerIdx++;
-    	if(buffer->writerIdx == buffer->maxElems)
-    	{
-    		buffer->writerIdx = 0;
-    	}
-    }
-    else
-    {
-    	if(buffer->)
-    }
+	else
+	{
+		AddElementAtIndex(buffer, element, &buffer->writerIdx);
+	}
+	if(buffer->writerIdx == buffer->writerIdx)
+	{
+		buffer->bufferState = BUFFER_STATE_FULL;
+	}
 }
 
 /*******************************************************************************
 * Static Functions
 ********************************************************************************/
+
+void AddElementAtIndex(CircularBufferStruct_t* buffer, void** element, uint32_t* index)
+{
+	void* bufferLoc = buffer->bufferArray;
+
+	bufferLoc += (buffer->writerIdx * buffer->elementSize);
+	memcpy(bufferLoc, element, buffer->elementSize);
+	buffer->writerIdx++;
+	if(buffer->writerIdx == buffer->maxElems)
+	{
+		buffer->writerIdx = 0;
+	}
+}

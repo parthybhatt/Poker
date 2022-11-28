@@ -51,10 +51,13 @@ int main()
 	CircularBuffer_Init(&BufferStruct, TrialBuffer, NUM_ELEMS_IN_ARRAY, sizeof(TrialBuffer[0]), true);
 
 	DisplayBuffer();
+	for(uint8_t j = 0; j < 5; j++)
 	for(i = 0; i < 10; i++)
 	{
 		CircularBuffer_AddElement(&BufferStruct, &sample[i]);
 	}
+	CircularBuffer_AddElement(&BufferStruct, &sample[i]);
+
 	DisplayBuffer();
 	return 0;
 }
