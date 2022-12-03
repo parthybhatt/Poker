@@ -20,7 +20,7 @@
 /*******************************************************************************
 * Constants and macros
 ********************************************************************************/
-#define NUM_ELEMS_IN_ARRAY 	50
+#define NUM_ELEMS_IN_ARRAY 	10
 
 /*******************************************************************************
 * Data types (Structs, enum)
@@ -55,6 +55,8 @@ int main()
 	{
 		CircularBuffer_AddElement(&BufferStruct, &sample[i]);
 	}
+	CircularBuffer_AddElement(&BufferStruct, &sample[--i]);
+
 	DisplayBuffer();
 	return 0;
 }

@@ -36,6 +36,8 @@ typedef struct
 {
 	uint32_t writerIdx;
 	uint32_t readerIdx;
+	uint16_t writerRolledOver;
+	uint16_t readerRolledOver;
 	uint32_t maxElems;
 	uint32_t elementSize;
 	void*    bufferArray;

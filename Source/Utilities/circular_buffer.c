@@ -32,14 +32,17 @@
 /*******************************************************************************
 * Static Functions Declaration
 ********************************************************************************/
+void AddElementAtIndex(CircularBufferStruct_t* buffer, void* element);
 
 /*******************************************************************************
 * Public Functions
 ********************************************************************************/
 void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct, void* buffer, uint32_t numElems, uint32_t elementsize, bool overflow)
 {
-	bufferStruct->writerIdx = 1;
+	bufferStruct->writerIdx = 0;
 	bufferStruct->readerIdx = 0;
+	bufferStruct->writerRolledOver = 0;
+	bufferStruct->readerRolledOver = 0;
 	bufferStruct->maxElems = numElems;
 	bufferStruct->elementSize = elementsize;
 	bufferStruct->bufferArray = buffer;
@@ -49,32 +52,37 @@ void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct, void* buffer, uin
 
 void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 {
-	void* bufferLoc = buffer->bufferArray;
-
 	if(buffer->bufferState == BUFFER_STATE_FULL)
 	{
 		if(buffer->allowOverflow == true)
 		{
-			//
+			AddElementAtIndex(buffer, element);
 		}
 	}
-
-    if(buffer->writerIdx != buffer->readerIdx)
-    {
-    	bufferLoc += (buffer->writerIdx * buffer->elementSize);
-    	memcpy(bufferLoc, element, buffer->elementSize);
-    	buffer->writerIdx++;
-    	if(buffer->writerIdx == buffer->maxElems)
-    	{
-    		buffer->writerIdx = 0;
-    	}
-    }
-    else
-    {
-    	if(buffer->)
-    }
+	else
+	{
+		AddElementAtIndex(buffer, element);
+	}
+	if(buffer->writerIdx == buffer->readerIdx)
+	{
+		buffer->bufferState = BUFFER_STATE_FULL;
+	}
 }
 
 /*******************************************************************************
 * Static Functions
 ********************************************************************************/
+
+void AddElementAtIndex(CircularBufferStruct_t* buffer, void* element)
+{
+	void* bufferLoc = buffer->bufferArray;
+
+	bufferLoc += (buffer->writerIdx * buffer->elementSize);
+	memcpy(bufferLoc, element, buffer->elementSize);
+	buffer->writerIdx++;
+	if(buffer->writerIdx == buffer->maxElems)
+	{
+		buffer->writerIdx = 0;
+		buffer->writerRolledOver ^= 1;
+	}
+}
