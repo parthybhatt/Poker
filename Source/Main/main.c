@@ -15,12 +15,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
-#include "circular_buffer.h"
+#include "card_deck.h"
 
 /*******************************************************************************
 * Constants and macros
 ********************************************************************************/
-#define NUM_ELEMS_IN_ARRAY 	10
 
 /*******************************************************************************
 * Data types (Structs, enum)
@@ -30,14 +29,9 @@
 * Static Variables
 ********************************************************************************/
 
-static uint32_t TrialBuffer[NUM_ELEMS_IN_ARRAY];
-static CircularBufferStruct_t BufferStruct;
-
 /*******************************************************************************
 * Static Functions Declaration
 ********************************************************************************/
-
-static void DisplayBuffer();
 
 /*******************************************************************************
 * Public Functions
@@ -45,33 +39,21 @@ static void DisplayBuffer();
 
 int main()
 {
-	uint32_t sample[10] = {1, 2, 4, 5, 6, 23 , 20, 22, 34, 43};
-	uint8_t i;
-	memset(TrialBuffer, 0, NUM_ELEMS_IN_ARRAY);
-	CircularBuffer_Init(&BufferStruct, TrialBuffer, NUM_ELEMS_IN_ARRAY, sizeof(TrialBuffer[0]), false);
-
-	bool status = true;
-	for(i = 0; i < 8; i++)
+	CardDeck_Init();
+	if(CardDeck_Shuffle())
 	{
-		status = CircularBuffer_AddElement(&BufferStruct, &sample[i]);
-
-		if(!status)
+		CardType_t cardVal;
+		uint8_t i;
+		while(CardDeck_GetNextCard(&cardVal))
 		{
-			break;
+			printf("%d -\t%c %c\n", i, CardDeck_GetShape(cardVal), CardDeck_GetVal(cardVal));
+			i++;
 		}
 	}
-	//CircularBuffer_AddElement(&BufferStruct, &sample[--i]);
-
-	printf("Display using get function:\n");
-	uint32_t displayNum;
-
-	while(CircularBuffer_GetLastElement(&BufferStruct, &displayNum))
+	else
 	{
-		printf("%d\t", displayNum);
+		printf("ShufflingError\n");
 	}
-	printf("\n\n");
-
-	DisplayBuffer();
 	return 0;
 }
 
@@ -79,15 +61,3 @@ int main()
 * Static Functions
 ********************************************************************************/
 
-static void DisplayBuffer()
-{
-	printf("TrialBuffer:\n");
-	for(uint8_t i = 0; i < NUM_ELEMS_IN_ARRAY; i++)
-	{
-		printf("%d\t",TrialBuffer[i]);
-
-		//if(i == NUM_ELEMS_IN_ARRAY/2)
-			//printf("\n");
-	}
-	printf("\n\n");
-}

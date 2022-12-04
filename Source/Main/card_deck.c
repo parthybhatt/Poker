@@ -14,6 +14,7 @@
 * Include Files
 ********************************************************************************/
 #include "card_deck.h"
+#include "circular_buffer.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -34,13 +35,12 @@
 ********************************************************************************/
 // TODO: Change this array into a circular buffer*****
 static CardType_t   CardDeck[MAX_CARDS_IN_DECK];
-static CardType_t   CardsDrawn[MAX_CARDS_IN_DECK];
-static uint8_t      NumCardsDrawn;
+static CircularBufferStruct_t CardsCircularBuffer;
 
 /*******************************************************************************
 * Static Functions Declaration
 ********************************************************************************/
-static void CreateNewDeck(CardType_t* cards);
+static void CreateNewDeck(CircularBufferStruct_t* cardsBuffer);
 static bool ValidateDeck(CardType_t* cards, CardType_t missingCards);
 static void SwapCards(CardType_t* cardA, CardType_t* cardB);
 static uint8_t GetRandomInRange(uint8_t numA, uint8_t numB);
@@ -50,18 +50,13 @@ static uint8_t GetRandomInRange(uint8_t numA, uint8_t numB);
 ********************************************************************************/
 void CardDeck_Init()
 {
-    memset(CardsDrawn, 0xFF, sizeof(CardsDrawn));
-    CreateNewDeck(CardDeck);
+    CircularBuffer_Init(&CardsCircularBuffer, CardDeck, MAX_CARDS_IN_DECK, sizeof(CardType_t), false);
+    CreateNewDeck(&CardsCircularBuffer);
 }
 
 bool CardDeck_Shuffle()
 {
     // Validate complete deck before shuffling
-    if(NumCardsDrawn != 0)
-    {
-        return false;
-    }
-    
     uint8_t i = MAX_CARDS_IN_DECK - 1;
     uint8_t j = 0;
     while(i > 0)
@@ -75,47 +70,31 @@ bool CardDeck_Shuffle()
 
 bool CardDeck_GetNextCard(CardType_t* cardVal)
 {
-    if(NumCardsDrawn >= MAX_CARDS_IN_DECK)
-    {
-        return false;
-    }
-    else
-    {
-        cardVal = CardDeck;
-        ++NumCardsDrawn;
-        return true;
-    }
+	return CircularBuffer_GetLastElement(&CardsCircularBuffer, cardVal);
 }
 
-bool CardDeck_PutCardBack()
+bool CardDeck_PutCardBack(CardType_t* cardVal)
 {
-	if(NumCardsDrawn > 0)
-	{
-		NumCardsDrawn--;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return CircularBuffer_AddElement(&CardsCircularBuffer, cardVal);
 }
 
+// H, S, C D
 char CardDeck_GetShape(CardType_t card)
 {
     char returnVal = 'E';
     switch(card.Shape)
     {
         case CARD_SHAPE_HEART:
-            returnVal = '♥';
+            returnVal = 'H';//'♥';
             break;
         case CARD_SHAPE_SPADE:
-            returnVal = '♠';
+            returnVal = 'S';//'♠';
             break;
         case CARD_SHAPE_CLUB:
-            returnVal = '♣';
+            returnVal = 'C';//'♣';
             break;
         case CARD_SHAPE_DIAMOND:
-            returnVal = '♦';
+            returnVal = 'D';//'♦';
             break;
         default:
             returnVal = 'E';
@@ -131,9 +110,13 @@ char CardDeck_GetVal(CardType_t card)
     {
         returnVal = 'A';
     }
-    else if(card.Number > 2 || card.Number < 11)
+    else if(card.Number > 1 && card.Number < 10)
     {
         returnVal = card.Number + 48; //convert directly to ascii
+    }
+    else if(card.Number == 10)
+    {
+    	returnVal = 'T';
     }
     else if(card.Number == 11)
     {
@@ -158,10 +141,12 @@ char CardDeck_GetVal(CardType_t card)
 * Static Functions
 ********************************************************************************/
 
-static void CreateNewDeck(CardType_t* cards)
+static void CreateNewDeck(CircularBufferStruct_t* cardsBuffer)
 {
     uint8_t i;
     int8_t j = -1;
+    CardType_t generatedCard;
+
     for (i = 0; i < MAX_CARDS_IN_DECK; i++)
     {
         if(0 == (i % 13))
@@ -169,10 +154,9 @@ static void CreateNewDeck(CardType_t* cards)
             j++;
         }
         
-        cards->Shape = j;
-        cards->Number = (i % 13) + 1;
-        
-        cards++;
+        generatedCard.Shape = j;
+        generatedCard.Number = (i % 13) + 1;
+        CircularBuffer_AddElement(&CardsCircularBuffer, (void*)&generatedCard);
     }
 }
 

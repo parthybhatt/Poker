@@ -41,16 +41,13 @@ typedef struct{
 /*******************************************************************************
 * Global Variables
 ********************************************************************************/
-CardType_t nullCard = {
-    .Shape = 0xFF,
-    .Number = 0xFF,
-};
+
 
 /*******************************************************************************
 * Functions
 ********************************************************************************/
 void CardDeck_Init();
-bool CardDeck_ShuffleNewDeck();
+bool CardDeck_Shuffle();
 bool CardDeck_GetNextCard(CardType_t* cardVal);
 bool CardDeck_PutCardBack();
 char CardDeck_GetShape(CardType_t card);
