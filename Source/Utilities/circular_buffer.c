@@ -41,8 +41,6 @@ void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct, void* buffer, uin
 {
 	bufferStruct->writerIdx = 0;
 	bufferStruct->readerIdx = 0;
-	bufferStruct->writerRolledOver = 0;
-	bufferStruct->readerRolledOver = 0;
 	bufferStruct->maxElems = numElems;
 	bufferStruct->elementSize = elementsize;
 	bufferStruct->bufferArray = buffer;
@@ -56,6 +54,7 @@ void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 	{
 		if(buffer->allowOverflow == true)
 		{
+			buffer->readerIdx++;
 			AddElementAtIndex(buffer, element);
 		}
 	}
@@ -68,6 +67,39 @@ void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 		buffer->bufferState = BUFFER_STATE_FULL;
 	}
 }
+
+bool CircularBuffer_GetLastElement(CircularBufferStruct_t* buffer, void* element)
+{
+	bool status = false;
+	void* bufferLoc = buffer->bufferArray;
+
+	bufferLoc += (buffer->readerIdx * buffer->elementSize);
+	if(buffer->bufferState == BUFFER_STATE_EMPTY)
+	{
+		status = false;
+	}
+	else
+	{
+		memcpy(element, bufferLoc, buffer->elementSize);
+		buffer->readerIdx++;
+		if(buffer->readerIdx == buffer->maxElems)
+		{
+			buffer->readerIdx = 0;
+		}
+		if(buffer->readerIdx == buffer->writerIdx)
+		{
+			buffer->bufferState = BUFFER_STATE_EMPTY;
+		}
+		else if(buffer->bufferState == BUFFER_STATE_FULL)
+		{
+			buffer->bufferState = BUFFER_STATE_HAS_ELEMENTS;
+		}
+		status = true;
+	}
+
+	return status;
+}
+
 
 /*******************************************************************************
 * Static Functions
@@ -83,6 +115,5 @@ void AddElementAtIndex(CircularBufferStruct_t* buffer, void* element)
 	if(buffer->writerIdx == buffer->maxElems)
 	{
 		buffer->writerIdx = 0;
-		buffer->writerRolledOver ^= 1;
 	}
 }

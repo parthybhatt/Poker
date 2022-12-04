@@ -59,6 +59,6 @@ void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct,
 		uint32_t elementsize,
 		bool overflow);
 void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element);
-void CircularBuffer_GetLastElement(CircularBufferStruct_t* buffer, void* element);
+bool CircularBuffer_GetLastElement(CircularBufferStruct_t* buffer, void* element);
 
 #endif
