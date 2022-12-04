@@ -38,6 +38,13 @@ typedef struct{
     uint8_t     Number;
 } CardType_t;
 
+typedef enum{
+	DECK_STATUS_MISSING_CARDS,
+	DECK_STATUS_DUPLICATE_CARDS,
+	DECK_STATUS_OK,
+	DECK_STATUS_UNKNOWN,
+} DeckStatus_t;
+
 /*******************************************************************************
 * Global Variables
 ********************************************************************************/
@@ -50,6 +57,7 @@ void CardDeck_Init();
 bool CardDeck_Shuffle();
 bool CardDeck_GetNextCard(CardType_t* cardVal);
 bool CardDeck_PutCardBack();
+DeckStatus_t CardDeck_Validate();
 char CardDeck_GetShape(CardType_t card);
 char CardDeck_GetVal(CardType_t card);
 

@@ -40,7 +40,9 @@
 int main()
 {
 	CardDeck_Init();
-	if(CardDeck_Shuffle())
+	DeckStatus_t status = CardDeck_Validate();
+
+	if(status == DECK_STATUS_OK && CardDeck_Shuffle())
 	{
 		CardType_t cardVal;
 		uint8_t i;
@@ -52,7 +54,18 @@ int main()
 	}
 	else
 	{
-		printf("ShufflingError\n");
+		if(status == DECK_STATUS_MISSING_CARDS)
+		{
+			printf("Cards missing from the deck\n\n");
+		}
+		else if(status == DECK_STATUS_DUPLICATE_CARDS)
+		{
+			printf("Duplicate cards found in the deck\n\n");
+		}
+		else
+		{
+			printf("ShufflingError\n");
+		}
 	}
 	return 0;
 }

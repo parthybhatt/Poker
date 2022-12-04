@@ -41,7 +41,6 @@ static CircularBufferStruct_t CardsCircularBuffer;
 * Static Functions Declaration
 ********************************************************************************/
 static void CreateNewDeck(CircularBufferStruct_t* cardsBuffer);
-static bool ValidateDeck(CardType_t* cards, CardType_t missingCards);
 static void SwapCards(CardType_t* cardA, CardType_t* cardB);
 static uint8_t GetRandomInRange(uint8_t numA, uint8_t numB);
 
@@ -76,6 +75,33 @@ bool CardDeck_GetNextCard(CardType_t* cardVal)
 bool CardDeck_PutCardBack(CardType_t* cardVal)
 {
 	return CircularBuffer_AddElement(&CardsCircularBuffer, cardVal);
+}
+
+DeckStatus_t CardDeck_Validate()
+{
+	uint8_t i = 0;
+	uint8_t availableCards[CARD_SHAPE_COUNT][MAX_CARD_OF_SHAPE];
+
+	if(CardsCircularBuffer.bufferState != BUFFER_STATE_FULL)
+	{
+		return DECK_STATUS_MISSING_CARDS;
+	}
+
+	memset(availableCards, 0, MAX_CARDS_IN_DECK);
+	for(i = 0; i < MAX_CARDS_IN_DECK; i++)
+	{
+		availableCards[CardDeck[i].Shape][CardDeck[i].Number-1] = 1;
+	}
+
+	for(i = 0; i < MAX_CARDS_IN_DECK; i++)
+	{
+		if(0 == availableCards[CardDeck[i].Shape][CardDeck[i].Number-1])
+		{
+			return DECK_STATUS_MISSING_CARDS;
+		}
+	}
+
+	return DECK_STATUS_OK;
 }
 
 // H, S, C D
@@ -158,20 +184,6 @@ static void CreateNewDeck(CircularBufferStruct_t* cardsBuffer)
         generatedCard.Number = (i % 13) + 1;
         CircularBuffer_AddElement(&CardsCircularBuffer, (void*)&generatedCard);
     }
-}
-
-static bool ValidateDeck(CardType_t* cards, CardType_t missingCards)
-{
-    uint8_t i = 0;
-    CardType_t tempDeck[MAX_CARDS_IN_DECK];
-    uint8_t availableCards[CARD_SHAPE_COUNT][MAX_CARD_OF_SHAPE];
-    // Sort the cards into tempDeck and verify if it has 52 unique cards
-    
-    for(i = 0; i < MAX_CARDS_IN_DECK; i++)
-    {
-        
-    }
-    return true;
 }
 
 static void SwapCards(CardType_t* cardA, CardType_t* cardB)
