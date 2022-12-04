@@ -48,8 +48,9 @@ void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct, void* buffer, uin
 	bufferStruct->bufferState = BUFFER_STATE_EMPTY;
 }
 
-void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
+bool CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 {
+	bool status = true;
 	if(buffer->bufferState == BUFFER_STATE_FULL)
 	{
 		if(buffer->allowOverflow == true)
@@ -57,15 +58,24 @@ void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element)
 			buffer->readerIdx++;
 			AddElementAtIndex(buffer, element);
 		}
+		else
+		{
+			status = false;
+		}
 	}
 	else
 	{
 		AddElementAtIndex(buffer, element);
+		if(buffer->bufferState == BUFFER_STATE_EMPTY)
+		{
+			buffer->bufferState = BUFFER_STATE_HAS_ELEMENTS;
+		}
 	}
 	if(buffer->writerIdx == buffer->readerIdx)
 	{
 		buffer->bufferState = BUFFER_STATE_FULL;
 	}
+	return status;
 }
 
 bool CircularBuffer_GetLastElement(CircularBufferStruct_t* buffer, void* element)

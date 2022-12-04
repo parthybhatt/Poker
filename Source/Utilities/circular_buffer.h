@@ -36,8 +36,6 @@ typedef struct
 {
 	uint32_t writerIdx;
 	uint32_t readerIdx;
-	uint16_t writerRolledOver;
-	uint16_t readerRolledOver;
 	uint32_t maxElems;
 	uint32_t elementSize;
 	void*    bufferArray;
@@ -58,7 +56,7 @@ void CircularBuffer_Init(CircularBufferStruct_t* bufferStruct,
 		uint32_t numElems,
 		uint32_t elementsize,
 		bool overflow);
-void CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element);
+bool CircularBuffer_AddElement(CircularBufferStruct_t* buffer, void* element);
 bool CircularBuffer_GetLastElement(CircularBufferStruct_t* buffer, void* element);
 
 #endif
