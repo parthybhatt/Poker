@@ -48,14 +48,28 @@ int main()
 	uint32_t sample[10] = {1, 2, 4, 5, 6, 23 , 20, 22, 34, 43};
 	uint8_t i;
 	memset(TrialBuffer, 0, NUM_ELEMS_IN_ARRAY);
-	CircularBuffer_Init(&BufferStruct, TrialBuffer, NUM_ELEMS_IN_ARRAY, sizeof(TrialBuffer[0]), true);
+	CircularBuffer_Init(&BufferStruct, TrialBuffer, NUM_ELEMS_IN_ARRAY, sizeof(TrialBuffer[0]), false);
 
-	DisplayBuffer();
-	for(i = 0; i < 10; i++)
+	bool status = true;
+	for(i = 0; i < 8; i++)
 	{
-		CircularBuffer_AddElement(&BufferStruct, &sample[i]);
+		status = CircularBuffer_AddElement(&BufferStruct, &sample[i]);
+
+		if(!status)
+		{
+			break;
+		}
 	}
-	CircularBuffer_AddElement(&BufferStruct, &sample[--i]);
+	//CircularBuffer_AddElement(&BufferStruct, &sample[--i]);
+
+	printf("Display using get function:\n");
+	uint32_t displayNum;
+
+	while(CircularBuffer_GetLastElement(&BufferStruct, &displayNum))
+	{
+		printf("%d\t", displayNum);
+	}
+	printf("\n\n");
 
 	DisplayBuffer();
 	return 0;
@@ -72,8 +86,8 @@ static void DisplayBuffer()
 	{
 		printf("%d\t",TrialBuffer[i]);
 
-		if(i == NUM_ELEMS_IN_ARRAY/2)
-			printf("\n");
+		//if(i == NUM_ELEMS_IN_ARRAY/2)
+			//printf("\n");
 	}
 	printf("\n\n");
 }
