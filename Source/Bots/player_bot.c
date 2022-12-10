@@ -15,8 +15,8 @@
 ********************************************************************************/
 #include <stdbool.h>
 #include <stdint.h>
+#include "player_bot.h""
 #include "card_deck.h"
-#include "PlayerBot.h"
 
 /*******************************************************************************
 * Constants and macros
